@@ -13,16 +13,16 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "username", nullable = false, length = 64)
+    @Column(name = "username", nullable = false, columnDefinition = "varbinary(255)")
     private String username;
 
     @Column(name = "email", nullable = false, length = 64)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", columnDefinition = "text")
     private String password;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "text")
     private String name;
 
     @Column(name = "enabled")
@@ -34,7 +34,7 @@ public class User {
     @Column(name = "locked")
     private Boolean locked;
 
-    @ManyToMany(targetEntity = Role.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Role.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),

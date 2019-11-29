@@ -5,15 +5,14 @@ import lvat.login01.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-//public class CustomUser implements UserDetails, OAuth2User {
-public class CustomUser implements UserDetails {
+public class CustomUser implements UserDetails, OAuth2User {
     private Integer id;
 
     private String username;
@@ -50,12 +49,30 @@ public class CustomUser implements UserDetails {
         this.attributes = attributes;
     }
 
-//    @Override
+    public static CustomUser create(User user) {
+        CustomUser customUser = new CustomUser();
+        customUser.id = user.getId();
+        customUser.username = user.getUsername();
+        customUser.email = user.getEmail();
+        customUser.password = user.getPassword();
+        customUser.name = user.getName();
+        customUser.enabled = user.getEnabled();
+        customUser.expired = user.getExpired();
+        customUser.locked = user.getLocked();
+        customUser.authorities = new LinkedList<>();
+        for (Role role : user.getRoleList()) {
+            customUser.authorities.add(new SimpleGrantedAuthority(role.getName().getRoleName()));
+        }
+        customUser.attributes = null;
+        return customUser;
+    }
+
+    //    @Override
     public String getName() {
         return name;
     }
 
-//    @Override
+    //    @Override
     public Map<String, Object> getAttributes() {
         return attributes;
     }
@@ -101,23 +118,5 @@ public class CustomUser implements UserDetails {
 
     public String getEmail() {
         return email;
-    }
-
-    public static CustomUser create(User user) {
-        CustomUser customUser = new CustomUser();
-        customUser.id = user.getId();
-        customUser.username = user.getUsername();
-        customUser.email = user.getEmail();
-        customUser.password = user.getPassword();
-        customUser.name = user.getName();
-        customUser.enabled = user.getEnabled();
-        customUser.expired = user.getExpired();
-        customUser.locked = user.getLocked();
-        customUser.authorities = new LinkedList<>();
-        for (Role role : user.getRoleList()) {
-            customUser.authorities.add(new SimpleGrantedAuthority(role.getName().getRoleName()));
-        }
-        customUser.attributes = null;
-        return customUser;
     }
 }

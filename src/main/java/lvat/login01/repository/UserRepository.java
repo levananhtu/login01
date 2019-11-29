@@ -6,15 +6,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    Optional<User> findByEmailIgnoreCaseOrUsernameEquals(String email, String username);
+    Optional<User> findByEmailIsOrUsername(String email, String username);
 
-    Optional<User> findByEmailIgnoreCase(String email);
+    Optional<User> findByEmailIs(String email);
 
-    Optional<User> findByUsernameEquals(String username);
+    Optional<User> findByUsernameIs(String username);
 
-    Boolean existsByUsernameEquals(String username);
+    Optional<User> findByPasswordIsAndUsernameIsOrPasswordIsAndEmailIs(String password01, String username, String password02, String email);
 
-    Boolean existsByEmailIgnoreCase(String email);
+//    Optional<User> findByPasswordIsAndUsernameIs()
 
-    Boolean existsByEmailIgnoreCaseOrUsernameEquals(String email, String username);
+    Boolean existsByUsernameIs(String username);
+
+    Boolean existsByEmailIs(String email);
+
+    Boolean existsByEmailIsOrUsernameIs(String email, String username);
+
+
 }

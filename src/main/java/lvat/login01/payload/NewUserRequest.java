@@ -1,21 +1,38 @@
 package lvat.login01.payload;
 
-public class NewUserRequest {
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+public class NewUserRequest {
+    @Length(max = 64, min = 4)
+    @Pattern(regexp = "^[a-zA-Z0-9_]*$", message = "username must contains only alphanumeric and underscores")
+    //https://stackoverflow.com/questions/336210/regular-expression-for-alphanumeric-and-underscores
     private String username;
 
+    @Email
+    @NotBlank
     private String email;
 
+    @Length(max = 64, min = 6)
     private String password;
 
+    @Length(max = 64, min = 6)
     private String name;
 
+    @NotNull
     private Boolean enabled;
 
+    @NotNull
     private Boolean expired;
 
+    @NotNull
     private Boolean locked;
 
+    @NotNull
     private Integer role;
 
     public String getUsername() {
