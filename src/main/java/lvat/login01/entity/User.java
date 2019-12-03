@@ -1,6 +1,7 @@
 package lvat.login01.entity;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Table(name = "users",
@@ -39,7 +40,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"}))
-    private List<Role> roleList;
+    private List<Role> roleList = new LinkedList<>();
 
     public User() {
     }
@@ -131,6 +132,14 @@ public class User {
 
     public List<Role> getRoleList() {
         return roleList;
+    }
+
+    public List<Role.RoleName> getRoleName() {
+        List<Role.RoleName> list = new LinkedList<>();
+        for (Role role : roleList) {
+            list.add(role.getName());
+        }
+        return list;
     }
 
     public void setRoleList(List<Role> roleList) {

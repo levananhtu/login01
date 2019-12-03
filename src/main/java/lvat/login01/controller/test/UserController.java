@@ -3,46 +3,62 @@ package lvat.login01.controller.test;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lvat.login01.entity.User;
-import lvat.login01.payload.LoginRequest;
-import lvat.login01.payload.NewUserRequest;
+import lvat.login01.payload.request.LoginRequest;
+import lvat.login01.payload.request.NewUserRequest;
+import lvat.login01.payload.response.JwtResponse;
+import lvat.login01.security.CustomUser;
+import lvat.login01.security.JwtProvider;
 import lvat.login01.service.RoleService;
 import lvat.login01.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
+import java.util.LinkedList;
 
 @RestController
-@RequestMapping(path = "")
-public class UserController extends TestController {
-    public UserController(UserService userService, RoleService roleService) {
-        super(userService, roleService);
+@RequestMapping(path = "/user/")
+public class UserController {
+    private final UserService userService;
+    private final RoleService roleService;
+    private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
+
+
+    public UserController(UserService userService, RoleService roleService, JwtProvider jwtProvider, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.roleService = roleService;
+        this.jwtProvider = jwtProvider;
+        this.authenticationManager = authenticationManager;
     }
 
-    @RequestMapping(path = "/user/get/byEmail", method = RequestMethod.GET)
+
+    @RequestMapping(path = "/get/byEmail", method = RequestMethod.GET)
     public User getUserByEmail(@RequestParam(value = "email", defaultValue = "LVAT01@GMAIL.COM") String email) {
         return userService.findByEmailIs(email).orElseThrow(RuntimeException::new);
     }
 
-    @RequestMapping(path = "/user/get/byUsername", method = RequestMethod.GET)
-    public User getUserByUsername(@RequestParam(value = "username", defaultValue = "lvat01") String email) {
-        return userService.findByUsernameIs(email).orElseThrow(RuntimeException::new);
+    @RequestMapping(path = "/get/byUsername", method = RequestMethod.GET)
+    public User getUserByUsername(@RequestParam(value = "username", defaultValue = "lvat01") String username) {
+        return userService.findByUsernameIs(username).orElseThrow(RuntimeException::new);
     }
 
-    @RequestMapping(path = "/user/get/byUsernameOrEmail", method = RequestMethod.GET)
+    @RequestMapping(path = "/get/byUsernameOrEmail", method = RequestMethod.GET)
     public User getUserByUsernameOrEmail(@RequestParam(value = "credentialString", defaultValue = "lvat01") String credentialString) {
         return userService.findByEmailIsOrUsername(credentialString, credentialString).orElseThrow(RuntimeException::new);
     }
 
-    @RequestMapping(path = "/user/post/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/post/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createUser(@Valid @RequestBody NewUserRequest newUserRequest) {
-        LoggerFactory.getLogger(UserController.class).info("suckkkker");
         if (userService.existsByEmailIsOrUsernameIs(newUserRequest.getEmail(), newUserRequest.getUsername())) {
             return ResponseEntity.badRequest().body("Failure");
         }
@@ -66,16 +82,47 @@ public class UserController extends TestController {
         return ResponseEntity.ok("Success");
     }
 
-    @RequestMapping(path = "/user/post/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Optional<User> login(@RequestBody LoginRequest loginRequest) {
+    @RequestMapping(path = "/post/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Logger logger = LoggerFactory.getLogger(UserController.class);
         logger.info(loginRequest.getPassword());
         logger.info(loginRequest.getUsernameOrEmail());
 
-        return userService.findByPasswordIsAndUsernameIsOrPasswordIsAndEmailIs(loginRequest.getPassword(), loginRequest.getUsernameOrEmail());
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+//
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        String jwt = jwtProvider.generateJwtToken(authentication);
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+
+//        Optional<User> userO = userService.findByPasswordIsAndUsernameIsOrPasswordIsAndEmailIs(loginRequest.getPassword(), loginRequest.getUsernameOrEmail());
+//        if (userO.isPresent()) {
+//            User user = userO.get();
+//            JwtResponse response = new JwtResponse();
+//            response.setEmail(user.getEmail());
+//            response.setUsername(user.getUsername());
+//            response.setRoleNames(user.getRoleName());
+//            response.setAccessToken(jwt);
+//            return ResponseEntity.ok(new JwtResponse());
+//        } else {
+//            return ResponseEntity.badRequest().body(new JwtResponse(null, null));
+//        }
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtProvider.generateJwtToken(authentication);
+        CustomUser userDetails = (CustomUser) authentication.getPrincipal();
+
+        return ResponseEntity.ok(new JwtResponse("Bearer", jwt, userDetails.getUsername(), userDetails.getEmail(), new LinkedList<>(userDetails.getAuthorities())));
+
     }
 
-    @RequestMapping(path = "/user/get/jwt1", method = RequestMethod.GET)
+    @RequestMapping(path = "/get/jwt1", method = RequestMethod.GET)
     public String jwt1() {
         Logger logger = LoggerFactory.getLogger(UserController.class);
         String jwt = Jwts.builder()
@@ -92,7 +139,7 @@ public class UserController extends TestController {
         return jwt;
     }
 
-    @RequestMapping(path = "/user/get/jwt2", method = RequestMethod.GET)
+    @RequestMapping(path = "/get/jwt2", method = RequestMethod.GET)
     public String jwt2(@RequestParam(value = "jwt") String jwt, @RequestParam(value = "claims") String claims) {
         return (String) Jwts.parser()
                 .setSigningKey("lvat")

@@ -1,4 +1,4 @@
-package lvat.login01.payload;
+package lvat.login01.payload.request;
 
 import org.hibernate.validator.constraints.Length;
 

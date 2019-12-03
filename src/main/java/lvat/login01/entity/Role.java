@@ -3,6 +3,7 @@ package lvat.login01.entity;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Table(name = "roles")
@@ -21,7 +22,7 @@ public class Role {
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"}))
-    private List<User> userList;
+    private List<User> userList = new LinkedList<>();
 
     public Role() {
     }
@@ -56,7 +57,8 @@ public class Role {
 
     public enum RoleName {
         ADMIN("ADMIN"),
-        USER("USER");
+        USER("USER"),
+        ROOT("ROOT");
 
         private String roleName;
 
