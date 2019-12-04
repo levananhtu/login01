@@ -115,10 +115,10 @@ public class UserController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = jwtProvider.generateJwtToken(authentication);
+        String jwt = jwtProvider.generateJwtAccessToken(authentication);
         CustomUser userDetails = (CustomUser) authentication.getPrincipal();
 
-        return ResponseEntity.ok(new JwtResponse("Bearer", jwt, userDetails.getUsername(), userDetails.getEmail(), new LinkedList<>(userDetails.getAuthorities())));
+        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getEmail(), new LinkedList<>(userDetails.getAuthorities())));
 
     }
 

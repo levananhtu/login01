@@ -1,31 +1,23 @@
 package lvat.login01.payload.response;
 
-import lvat.login01.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 
 public class JwtResponse {
     private String tokenType = "Bearer";
-    private String accessToken = null;
     private String username = null;
     private String email = null;
     private List<GrantedAuthority> roles = null;
 
-
     public JwtResponse() {
     }
 
-    public JwtResponse(String tokenType, String accessToken, String username, String email, List<GrantedAuthority> roles) {
+    public JwtResponse(String tokenType, String username, String email, List<GrantedAuthority> roles) {
         this.tokenType = tokenType;
-        this.accessToken = accessToken;
         this.username = username;
         this.email = email;
         this.roles = roles;
-    }
-
-    public JwtResponse(String accessToken) {
-        this.accessToken = accessToken;
     }
 
     public String getTokenType() {
@@ -34,14 +26,6 @@ public class JwtResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 
     public String getUsername() {
