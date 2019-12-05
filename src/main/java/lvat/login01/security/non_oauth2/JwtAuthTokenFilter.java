@@ -1,9 +1,10 @@
-package lvat.login01.security;
+package lvat.login01.security.non_oauth2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
@@ -28,22 +29,21 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
             logger.info(jwt);
-
-            if (StringUtils.hasText(jwt) && jwtProvider.isValidJwtToken(jwt)) {
-                String username = jwtProvider.getUsernameFromJwtToken(jwt);
-                CustomUser user = (CustomUser) userDetailsService.loadUserByUsername(username);
+            if (StringUtils.hasText(jwt) && jwtProvider.isValidAccessToken(jwt)) {
+                String username = jwtProvider.getUsernameFromAccessToken(jwt);
+                logger.info(username);
+                UserDetails user = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                logger.info("123456");
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {
-            logger.error("Could not set user authentication in security context");
+            logger.error("Could not set user authentication in security context", e);
         }
         try {
             filterChain.doFilter(request, response);
         } catch (IOException | ServletException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 

@@ -4,20 +4,21 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 
-public class JwtResponse {
-    private String tokenType = "Bearer";
+public class DetailTokenResponse extends TokenResponse {
     private String username = null;
     private String email = null;
     private List<GrantedAuthority> roles = null;
 
-    public JwtResponse() {
+    public DetailTokenResponse() {
     }
 
-    public JwtResponse(String tokenType, String username, String email, List<GrantedAuthority> roles) {
-        this.tokenType = tokenType;
+    public DetailTokenResponse(String accessToken, String refreshToken, String username, String email, List<GrantedAuthority> roles) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.username = username;
         this.email = email;
         this.roles = roles;
+        this.tokenType = "Bearer";
     }
 
     public String getTokenType() {
@@ -50,5 +51,21 @@ public class JwtResponse {
 
     public void setRoles(List<GrantedAuthority> roles) {
         this.roles = roles;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

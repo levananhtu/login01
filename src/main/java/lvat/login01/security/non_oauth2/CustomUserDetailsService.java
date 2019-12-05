@@ -1,6 +1,7 @@
-package lvat.login01.security;
+package lvat.login01.security.non_oauth2;
 
 import lvat.login01.entity.User;
+import lvat.login01.security.CustomUser;
 import lvat.login01.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

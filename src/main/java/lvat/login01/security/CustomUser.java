@@ -5,13 +5,14 @@ import lvat.login01.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class CustomUser implements UserDetails {
+public class CustomUser implements UserDetails, OAuth2User {
     private Integer id;
 
     private String username;
@@ -28,7 +29,7 @@ public class CustomUser implements UserDetails {
 
     private Boolean locked;
 
-    private List<GrantedAuthority> authorities=new LinkedList<>();
+    private List<GrantedAuthority> authorities = new LinkedList<>();
 
     private Map<String, Object> attributes;
 
@@ -64,6 +65,11 @@ public class CustomUser implements UserDetails {
         }
         customUser.attributes = null;
         return customUser;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override
@@ -107,5 +113,10 @@ public class CustomUser implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }

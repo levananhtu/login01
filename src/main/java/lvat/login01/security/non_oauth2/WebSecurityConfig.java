@@ -1,4 +1,4 @@
-package lvat.login01.security;
+package lvat.login01.security.non_oauth2;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,20 +65,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         ;
 //        http
 //                .authorizeRequests()
-//                .antMatchers("/")
+//                .antMatchers(HttpMethod.POST, "/user/post/getNewTokenPair")
 //                .permitAll()
 //        ;
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/user/post/create")
                 .anonymous()
-
+                .antMatchers(HttpMethod.POST, "/user/post/getNewTokenPair")
+                .anonymous()
                 .antMatchers(HttpMethod.POST, "/user/post/login")
                 .anonymous()
-
                 .anyRequest()
-                .authenticated()
+                .permitAll()
         ;
+//        http
+//                .authorizeRequests()
+//                .antMatchers(HttpMethod.POST, "/user/post/login")
+//                .anonymous()
+//        ;
+//        http.authorizeRequests()
+//                .anyRequest()
+//                .permitAll()
+//        ;
         http
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)

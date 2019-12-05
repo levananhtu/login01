@@ -3,6 +3,7 @@ package lvat.login01.service;
 import lvat.login01.entity.Role;
 import lvat.login01.repository.RoleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,5 +36,10 @@ public class RoleService {
             return roleList;
         }
         throw new RuntimeException();
+    }
+
+    @Transactional
+    public Role save(Role role) {
+        return roleRepository.save(role);
     }
 }

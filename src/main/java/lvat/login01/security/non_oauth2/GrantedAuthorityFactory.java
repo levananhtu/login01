@@ -1,4 +1,4 @@
-package lvat.login01.security;
+package lvat.login01.security.non_oauth2;
 
 import lvat.login01.entity.Role;
 import org.springframework.security.core.GrantedAuthority;

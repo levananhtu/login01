@@ -20,7 +20,7 @@ public class NewUserRequest {
     @Length(max = 64, min = 6)
     private String password;
 
-    @Length(max = 64, min = 6)
+    @Length(max = 64, min = 4)
     private String name;
 
     @NotNull

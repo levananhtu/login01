@@ -1,4 +1,4 @@
-package lvat.login01.security;
+package lvat.login01.security.non_oauth2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

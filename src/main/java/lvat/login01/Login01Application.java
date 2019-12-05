@@ -2,8 +2,8 @@ package lvat.login01;
 
 import lvat.login01.entity.Role;
 import lvat.login01.entity.User;
-import lvat.login01.repository.RoleRepository;
-import lvat.login01.repository.UserRepository;
+import lvat.login01.service.RoleService;
+import lvat.login01.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,15 +19,14 @@ public class Login01Application {
     }
 
     @Bean
-    public CommandLineRunner demoData(RoleRepository roleRepository, UserRepository userRepository) {
+    public CommandLineRunner demoData(RoleService roleService, UserService userService) {
         return args -> {
             try {
-                Role userRole = roleRepository.save(new Role(Role.RoleName.USER));
-                roleRepository.save(new Role(Role.RoleName.ADMIN));
-                roleRepository.save(new Role(Role.RoleName.ROOT));
+                roleService.save(new Role(Role.RoleName.ADMIN));
+                roleService.save(new Role(Role.RoleName.ROOT));
                 User user = new User("lvat01", "lvat01@gmail.com", "123456", "leviathan");
-                user.setRoleList(Collections.singletonList(userRole));
-                userRepository.save(user);
+                user.setRoleList(Collections.singletonList(new Role(Role.RoleName.USER)));
+                userService.save(user);
             } catch (Exception ignored) {
 
             }

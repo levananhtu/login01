@@ -4,19 +4,24 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lvat.login01.entity.User;
 import lvat.login01.payload.request.LoginRequest;
+import lvat.login01.payload.request.NewTokenPairRequest;
 import lvat.login01.payload.request.NewUserRequest;
-import lvat.login01.payload.response.JwtResponse;
+import lvat.login01.payload.response.DetailTokenResponse;
+import lvat.login01.payload.response.MessageResponse;
+import lvat.login01.payload.response.TokenResponse;
 import lvat.login01.security.CustomUser;
-import lvat.login01.security.JwtProvider;
+import lvat.login01.security.non_oauth2.JwtProvider;
 import lvat.login01.service.RoleService;
 import lvat.login01.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,7 +65,7 @@ public class UserController {
     @RequestMapping(path = "/post/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createUser(@Valid @RequestBody NewUserRequest newUserRequest) {
         if (userService.existsByEmailIsOrUsernameIs(newUserRequest.getEmail(), newUserRequest.getUsername())) {
-            return ResponseEntity.badRequest().body("Failure");
+            return ResponseEntity.badRequest().body(new MessageResponse("Username or email has already existed", HttpStatus.BAD_REQUEST));
         }
 
         User user = new User();
@@ -75,11 +80,11 @@ public class UserController {
         try {
             user.setRoleList(roleService.getRoleListByRole(newUserRequest.getRole()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failure");
+            return ResponseEntity.badRequest().body(new MessageResponse("Bad argument", HttpStatus.BAD_REQUEST));
         }
         userService.save(user);
 
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(new MessageResponse("Account created successfully", HttpStatus.OK));
     }
 
     @RequestMapping(path = "/post/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -87,38 +92,19 @@ public class UserController {
         Logger logger = LoggerFactory.getLogger(UserController.class);
         logger.info(loginRequest.getPassword());
         logger.info(loginRequest.getUsernameOrEmail());
-
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        String jwt = jwtProvider.generateJwtToken(authentication);
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-
-//        Optional<User> userO = userService.findByPasswordIsAndUsernameIsOrPasswordIsAndEmailIs(loginRequest.getPassword(), loginRequest.getUsernameOrEmail());
-//        if (userO.isPresent()) {
-//            User user = userO.get();
-//            JwtResponse response = new JwtResponse();
-//            response.setEmail(user.getEmail());
-//            response.setUsername(user.getUsername());
-//            response.setRoleNames(user.getRoleName());
-//            response.setAccessToken(jwt);
-//            return ResponseEntity.ok(new JwtResponse());
-//        } else {
-//            return ResponseEntity.badRequest().body(new JwtResponse(null, null));
-//        }
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Bad credential", HttpStatus.BAD_REQUEST));
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = jwtProvider.generateJwtAccessToken(authentication);
+        JwtProvider.TokenPair tokenPair = jwtProvider.generateTokenPair(authentication);
         CustomUser userDetails = (CustomUser) authentication.getPrincipal();
-
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getEmail(), new LinkedList<>(userDetails.getAuthorities())));
+        return ResponseEntity.ok(new DetailTokenResponse(tokenPair.getAccessToken(), tokenPair.getRefreshToken(), userDetails.getUsername(), userDetails.getEmail(), new LinkedList<>(userDetails.getAuthorities())));
 
     }
 
@@ -140,10 +126,19 @@ public class UserController {
     }
 
     @RequestMapping(path = "/get/jwt2", method = RequestMethod.GET)
-    public String jwt2(@RequestParam(value = "jwt") String jwt, @RequestParam(value = "claims") String claims) {
-        return (String) Jwts.parser()
-                .setSigningKey("lvat")
+    public Object jwt2(@RequestParam(value = "jwt") String jwt, @RequestParam(value = "claims", defaultValue = "username") String claims) {
+        return Jwts.parser()
+                .setSigningKey(JwtProvider.getJwtAccessTokenSecret())
                 .parseClaimsJws(jwt).getBody()
                 .get(claims);
+    }
+
+    @RequestMapping(path = "/post/getNewTokenPair", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getNewTokenPair(@RequestBody NewTokenPairRequest request) {
+        JwtProvider.TokenPair keyPair = jwtProvider.generateTokenPair(request.getRefreshToken());
+        if (keyPair == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Token is not valid", HttpStatus.BAD_REQUEST));
+        }
+        return ResponseEntity.ok(new TokenResponse(keyPair.getAccessToken(), keyPair.getRefreshToken()));
     }
 }

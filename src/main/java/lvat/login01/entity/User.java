@@ -35,7 +35,7 @@ public class User {
     @Column(name = "locked")
     private Boolean locked;
 
-    @ManyToMany(targetEntity = Role.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(targetEntity = Role.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
@@ -134,15 +134,15 @@ public class User {
         return roleList;
     }
 
+    public void setRoleList(List<Role> roleList) {
+        this.roleList = roleList;
+    }
+
     public List<Role.RoleName> getRoleName() {
         List<Role.RoleName> list = new LinkedList<>();
         for (Role role : roleList) {
             list.add(role.getName());
         }
         return list;
-    }
-
-    public void setRoleList(List<Role> roleList) {
-        this.roleList = roleList;
     }
 }
