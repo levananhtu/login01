@@ -13,10 +13,12 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+
     @Enumerated(EnumType.STRING)
     @NaturalId
     @Column(name = "name", length = 60)
     private RoleName name;
+
     @ManyToMany(targetEntity = User.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

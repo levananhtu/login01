@@ -62,6 +62,8 @@ public class UserController {
         return userService.findByEmailIsOrUsername(credentialString, credentialString).orElseThrow(RuntimeException::new);
     }
 
+    /***/
+
     @RequestMapping(path = "/post/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createUser(@Valid @RequestBody NewUserRequest newUserRequest) {
         if (userService.existsByEmailIsOrUsernameIs(newUserRequest.getEmail(), newUserRequest.getUsername())) {
@@ -108,6 +110,17 @@ public class UserController {
 
     }
 
+    @RequestMapping(path = "/post/getNewTokenPair", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getNewTokenPair(@RequestBody NewTokenPairRequest request) {
+        JwtProvider.TokenPair keyPair = jwtProvider.generateTokenPair(request.getRefreshToken());
+        if (keyPair == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Token is not valid", HttpStatus.BAD_REQUEST));
+        }
+        return ResponseEntity.ok(new TokenResponse(keyPair.getAccessToken(), keyPair.getRefreshToken()));
+    }
+
+    /***/
+
     @RequestMapping(path = "/get/jwt1", method = RequestMethod.GET)
     public String jwt1() {
         Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -133,12 +146,4 @@ public class UserController {
                 .get(claims);
     }
 
-    @RequestMapping(path = "/post/getNewTokenPair", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getNewTokenPair(@RequestBody NewTokenPairRequest request) {
-        JwtProvider.TokenPair keyPair = jwtProvider.generateTokenPair(request.getRefreshToken());
-        if (keyPair == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Token is not valid", HttpStatus.BAD_REQUEST));
-        }
-        return ResponseEntity.ok(new TokenResponse(keyPair.getAccessToken(), keyPair.getRefreshToken()));
-    }
 }
