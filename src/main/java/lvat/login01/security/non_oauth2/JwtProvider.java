@@ -1,6 +1,7 @@
 package lvat.login01.security.non_oauth2;
 
 import io.jsonwebtoken.*;
+import lvat.login01.property.AppProperties;
 import lvat.login01.security.CustomUser;
 import lvat.login01.service.UserService;
 import org.slf4j.Logger;
@@ -12,15 +13,19 @@ import java.util.Date;
 
 @Component
 public class JwtProvider {
-    private static String jwtAccessTokenSecret = "_LevananhtuAccess00";
-    private static String jwtRefreshTokenSecret = "_RefreshLevananhtu00";
-    private static long jwtAccessTokenExpiration = 1_800;//s -> 30m
-    private static long jwtRefreshTokenExpiration = 2_592_000;//s -> 30d
+    private static String jwtAccessTokenSecret;
+    private static String jwtRefreshTokenSecret;
+    private static long jwtAccessTokenExpiration;//s -> 30m
+    private static long jwtRefreshTokenExpiration;//s -> 30d
     private final UserService userService;
     private Logger LOGGER = LoggerFactory.getLogger(JwtProvider.class);
 
-    public JwtProvider(UserService userService) {
+    public JwtProvider(UserService userService, AppProperties appProperties) {
         this.userService = userService;
+        jwtAccessTokenSecret = appProperties.getAuth().getAccessTokenSecret();
+        jwtRefreshTokenSecret = appProperties.getAuth().getRefreshTokenSecret();
+        jwtAccessTokenExpiration = appProperties.getAuth().getAccessTokenExpirationSec();
+        jwtRefreshTokenExpiration = appProperties.getAuth().getRefreshTokenExpirationSec();
     }
 
     public static String getJwtAccessTokenSecret() {

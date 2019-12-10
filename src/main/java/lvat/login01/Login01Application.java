@@ -2,16 +2,19 @@ package lvat.login01;
 
 import lvat.login01.entity.Role;
 import lvat.login01.entity.User;
+import lvat.login01.property.AppProperties;
 import lvat.login01.service.RoleService;
 import lvat.login01.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Collections;
 
 @SpringBootApplication
+@EnableConfigurationProperties(AppProperties.class)
 public class Login01Application {
 
     public static void main(String[] args) {
