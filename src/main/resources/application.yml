@@ -1,50 +1,47 @@
 debug: true
 server:
-    port: 8090
+  port: 8090
 spring:
-    datasource:
-        initialization-mode: always
-        password: leviathan00
-        testWhileIdle: true
-        url: jdbc:mysql://localhost:3306/test_db_ver04?useSSL=true
-        username: root
-        validationQuery: SELECT 1
-        test-while-idle: true
-        validation-query: SELECT 1
+  datasource:
+    initialization-mode: always
+    username: root
+    password: leviathan00
+    testWhileIdle: true
+    url: jdbc:mysql://localhost:3306/test_db_ver04?useSSL=true
+    validationQuery: SELECT 1
+    test-while-idle: true
+    validation-query: SELECT 1
 
-    jackson:
-        time-zone: UTC
-        serialization: false
-
-    jpa:
-        hibernate:
-            ddl-auto: update
-        properties:
-            hibernate:
-                current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
-                show_sql: ${spring.jpa.show-sql}
-                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-        show-sql: true
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        clientId: 521013454593-ccvkbp5qp0eaad11bfei10cukt7mi9hb.apps.googleusercontent.com
-                        clientSecret: boVQtzRAYn6u7dBi58b-cjdL
-                        redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
-                        scope:
-                            - email
-app:
-    auth:
-        accessTokenSecret: _LevananhtuAccess00
-        refreshTokenSecret: _RefreshLevananhtu00
-        accessTokenExpirationSec: 1800
-        refreshTokenExpirationSec: 2592000
+  jackson:
+    time-zone: UTC
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        show_sql: ${spring.jpa.show-sql}
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+  security:
     oauth2:
-        # After successfully authenticating with the OAuth2 Provider,
-        # we'll be generating an auth token for the user and sending the token to the
-        # redirectUri mentioned by the client in the /oauth2/authorize request.
-        # We're not using cookies because they won't work well in mobile clients.
-        authorizedRedirectUris:
-            - http://localhost:3000/oauth2/redirect
+      client:
+        registration:
+          google:
+            clientId: 521013454593-ccvkbp5qp0eaad11bfei10cukt7mi9hb.apps.googleusercontent.com
+            clientSecret: boVQtzRAYn6u7dBi58b-cjdL
+            redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+app:
+  auth:
+    accessTokenSecret: _LevananhtuAccess00
+    refreshTokenSecret: _RefreshLevananhtu00
+    accessTokenExpirationSec: 1800
+    refreshTokenExpirationSec: 2592000
+  oauth2:
+    # After successfully authenticating with the OAuth2 Provider,
+    # we'll be generating an auth token for the user and sending the token to the
+    # redirectUri mentioned by the client in the /oauth2/authorize request.
+    # We're not using cookies because they won't work well in mobile clients.
+    authorizedRedirectUri: http://localhost:3000/oauth2/redirect

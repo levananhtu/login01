@@ -1,10 +1,11 @@
 package lvat.login01.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Table(name = "roles")
 @Entity
@@ -19,12 +20,13 @@ public class Role {
     @Column(name = "name", length = 60)
     private RoleName name;
 
-    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"}))
-    private List<User> userList = new LinkedList<>();
+    @JsonBackReference
+    private Set<User> users = new HashSet<>();
 
     public Role() {
     }
@@ -49,12 +51,26 @@ public class Role {
         this.name = name;
     }
 
-    public List<User> getUserList() {
-        return userList;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Role) {
+            Role other = (Role) obj;
+            return this.name == other.name;
+        }
+        return false;
     }
 
     public enum RoleName {

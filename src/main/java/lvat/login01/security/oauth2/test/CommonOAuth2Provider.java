@@ -23,7 +23,6 @@ public enum CommonOAuth2Provider {
             return builder;
         }
     },
-
     GITHUB {
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
@@ -38,9 +37,7 @@ public enum CommonOAuth2Provider {
             return builder;
         }
     },
-
     GITLAB {//https://gitlab.com/.well-known/openid-configuration
-
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
             ClientRegistration.Builder builder = getBuilder(registrationId,
@@ -54,7 +51,6 @@ public enum CommonOAuth2Provider {
             return builder;
         }
     },
-
     FACEBOOK {
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
@@ -69,7 +65,6 @@ public enum CommonOAuth2Provider {
             return builder;
         }
     },
-
     MICROSOFT {//https://login.microsoftonline.com/contoso.onmicrosoft.com/.well-known/openid-configuration
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
@@ -83,7 +78,6 @@ public enum CommonOAuth2Provider {
             return builder;
         }
     },
-
     OKTA {
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {

@@ -4,7 +4,6 @@ import lvat.login01.security.oauth2.CustomOAuth2UserService;
 import lvat.login01.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import lvat.login01.security.oauth2.OAuth2AuthenticationFailureHandler;
 import lvat.login01.security.oauth2.OAuth2AuthenticationSuccessHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -84,23 +83,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
         http
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/user/post/create")
-                .anonymous()
-                .antMatchers(HttpMethod.POST, "/user/post/getNewTokenPair")
-                .anonymous()
-                .antMatchers(HttpMethod.POST, "/user/post/login")
+                .antMatchers(HttpMethod.POST, "/app/post/create")
+                .hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.POST, "/app/post/getNewTokenPair")
+                .permitAll()
+                .antMatchers(HttpMethod.POST, "/app/post/login")
                 .anonymous()
                 .anyRequest()
-                .permitAll()
+//                .permitAll()
+                .authenticated()
         ;
+//        http
+//                .authorizeRequests()
+//                .anyRequest()
+//                .authenticated()
+//        ;
 //        http
 //                .authorizeRequests()
 //                .antMatchers(HttpMethod.POST, "/user/post/login")
 //                .anonymous()
-//        ;
-//        http.authorizeRequests()
-//                .anyRequest()
-//                .permitAll()
 //        ;
         http
                 .exceptionHandling()

@@ -1,6 +1,7 @@
 package lvat.login01.security.oauth2;
 
 import lvat.login01.exception.BadRequestException;
+import lvat.login01.property.AppProperties;
 import lvat.login01.security.non_oauth2.JwtProvider;
 import lvat.login01.security.util.CookieUtil;
 import org.springframework.security.core.Authentication;
@@ -19,11 +20,13 @@ import java.util.Optional;
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtProvider jwtProvider;
+    private final AppProperties appProperties;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
-    public OAuth2AuthenticationSuccessHandler(JwtProvider jwtProvider, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+    public OAuth2AuthenticationSuccessHandler(JwtProvider jwtProvider, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository, AppProperties appProperties) {
         this.jwtProvider = jwtProvider;
         this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+        this.appProperties = appProperties;
     }
 
     @Override
@@ -64,6 +67,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         //                    return authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
         //                            && authorizedURI.getPort() == clientRedirectUri.getPort();
         //                });
-        return true;
+        URI authorizedRedirectUri = URI.create(appProperties.getOauth2().getAuthorizedRedirectUri());
+        return clientRedirectUri.getPort() == authorizedRedirectUri.getPort() && clientRedirectUri.getHost().equalsIgnoreCase(authorizedRedirectUri.getHost());
+
+//        return appProperties
+//                .getOauth2()
+//                .getAuthorizedRedirectUris()
+//                .stream()
+//                .anyMatch(authorizedRedirectUri -> {
+//                    URI authorizedUri = URI.create(authorizedRedirectUri);
+//                    return authorizedUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+//                            && authorizedUri.getPort() == clientRedirectUri.getPort();
+//                });
     }
 }

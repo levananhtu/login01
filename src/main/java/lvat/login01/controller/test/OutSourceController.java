@@ -2,22 +2,23 @@ package lvat.login01.controller.test;
 
 import lvat.login01.entity.User;
 import lvat.login01.exception.BadRequestException;
+import lvat.login01.exception.ResourceNotFoundException;
 import lvat.login01.payload.outsource.ApiResponse;
 import lvat.login01.payload.outsource.AuthResponse;
 import lvat.login01.payload.outsource.LoginRequest;
 import lvat.login01.payload.outsource.SignUpRequest;
+import lvat.login01.security.CustomUser;
+import lvat.login01.security.non_oauth2.CurrentUser;
 import lvat.login01.security.non_oauth2.JwtProvider;
 import lvat.login01.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -76,6 +77,14 @@ public class OutSourceController {
 
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "User registered successfully"));
+    }
+
+    @GetMapping("/user/me")
+    @PreAuthorize("hasRole('USER')")
+    public User getCurrentUser(@CurrentUser CustomUser userPrincipal) {
+
+        return userService.findById(userPrincipal.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }
 
 }

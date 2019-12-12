@@ -5,9 +5,7 @@ import lvat.login01.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RoleService {
@@ -25,15 +23,15 @@ public class RoleService {
         return roleRepository.existsByName(roleName);
     }
 
-    public List<Role> getRoleListByRole(Integer role) {
-        List<Role> roleList = new LinkedList<>();
-        roleList.add(roleRepository.findByName(Role.RoleName.ADMIN).orElseThrow(RuntimeException::new));
+    public Set<Role> getRoleSetByRole(Integer role) {
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(roleRepository.findByName(Role.RoleName.ADMIN).orElseThrow(RuntimeException::new));
         if (role == 1) {
-            return roleList;
+            return roleSet;
         }
         if (role == 2) {
-            roleList.add(roleRepository.findByName(Role.RoleName.USER).orElseThrow(RuntimeException::new));
-            return roleList;
+            roleSet.add(roleRepository.findByName(Role.RoleName.USER).orElseThrow(RuntimeException::new));
+            return roleSet;
         }
         throw new RuntimeException();
     }

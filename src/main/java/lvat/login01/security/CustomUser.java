@@ -60,7 +60,7 @@ public class CustomUser implements UserDetails, OAuth2User {
         customUser.expired = user.getExpired();
         customUser.locked = user.getLocked();
         customUser.authorities = new LinkedList<>();
-        for (Role role : user.getRoleList()) {
+        for (Role role : user.getRoles()) {
             customUser.authorities.add(new SimpleGrantedAuthority(role.getName().getRoleName()));
         }
         customUser.attributes = null;

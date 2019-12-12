@@ -1,7 +1,5 @@
 package lvat.login01.payload.outsource;
 
-import org.slf4j.Logger;
-
 public class ApiResponse {
     private boolean success;
     private String message;

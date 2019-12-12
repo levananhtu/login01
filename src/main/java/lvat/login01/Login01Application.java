@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.Collections;
 
 @SpringBootApplication
-@EnableConfigurationProperties(AppProperties.class)
+@EnableConfigurationProperties(value = AppProperties.class)
 public class Login01Application {
 
     public static void main(String[] args) {
@@ -27,9 +27,12 @@ public class Login01Application {
             try {
                 roleService.save(new Role(Role.RoleName.ADMIN));
                 roleService.save(new Role(Role.RoleName.ROOT));
-                User user = new User("lvat01", "lvat01@gmail.com", "123456", "leviathan");
-                user.setRoleList(Collections.singletonList(new Role(Role.RoleName.USER)));
-                userService.save(user);
+                User user01 = new User("lvat01", "lvat01@gmail.com", "123456", "leviathan");
+                user01.setRoles(Collections.singleton(new Role(Role.RoleName.USER)));
+                userService.save(user01);
+                User user02 = new User("lvat02", "lvat02@gmail.com", "123456", "leviathan");
+                user02.setRoles(Collections.singleton(new Role(Role.RoleName.USER)));
+
             } catch (Exception ignored) {
 
             }

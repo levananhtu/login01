@@ -1,8 +1,12 @@
 package lvat.login01.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "users",
         uniqueConstraints = {@UniqueConstraint(columnNames = "email"),
@@ -40,7 +44,8 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"}))
-    private List<Role> roleList = new LinkedList<>();
+    @JsonManagedReference
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }
@@ -130,19 +135,33 @@ public class User {
         this.locked = locked;
     }
 
-    public List<Role> getRoleList() {
-        return roleList;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRoleList(List<Role> roleList) {
-        this.roleList = roleList;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public List<Role.RoleName> getRoleName() {
         List<Role.RoleName> list = new LinkedList<>();
-        for (Role role : roleList) {
+        for (Role role : roles) {
             list.add(role.getName());
         }
         return list;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            User other = (User) obj;
+            return other.username.equals(this.username) && other.email.equalsIgnoreCase(this.email);
+        }
+        return false;
     }
 }
