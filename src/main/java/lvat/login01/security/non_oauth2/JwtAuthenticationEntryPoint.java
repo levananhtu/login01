@@ -10,13 +10,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
-        logger.error("Unauthorized error");
+
+        for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements(); ) {
+            logger.error(e.nextElement());
+        }
+        logger.error(request.getMethod());
+
+        logger.error("Unauthorized error", authException);
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error -> Unauthorized");
     }
 }

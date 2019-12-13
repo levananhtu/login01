@@ -22,7 +22,7 @@ public enum CommonOAuth2Provider {
             builder.clientName("Google");
             return builder;
         }
-    },
+    },//
     GITHUB {
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
@@ -36,8 +36,9 @@ public enum CommonOAuth2Provider {
             builder.clientName("GitHub");
             return builder;
         }
-    },
+    },//
     GITLAB {//https://gitlab.com/.well-known/openid-configuration
+
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
             ClientRegistration.Builder builder = getBuilder(registrationId,
@@ -64,8 +65,9 @@ public enum CommonOAuth2Provider {
             builder.clientName("Facebook");
             return builder;
         }
-    },
+    },//
     MICROSOFT {//https://login.microsoftonline.com/contoso.onmicrosoft.com/.well-known/openid-configuration
+
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
             ClientRegistration.Builder builder = getBuilder(registrationId,
@@ -78,6 +80,23 @@ public enum CommonOAuth2Provider {
             return builder;
         }
     },
+    REDDIT {
+        @Override
+        public ClientRegistration.Builder getBuilder(String registrationId) {
+            ClientRegistration.Builder builder = getBuilder(registrationId,
+                    ClientAuthenticationMethod.BASIC, DEFAULT_REDIRECT_URL);
+            builder.authorizationUri("https://www.reddit.com/api/v1/authorize");
+            builder.tokenUri("https://www.reddit.com/api/v1/access_token");
+            builder.clientName("Reddit");
+            return null;
+        }
+    },
+    TWITTER{
+        @Override
+        public ClientRegistration.Builder getBuilder(String registrationId) {
+            return null;
+        }
+    },
     OKTA {
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
@@ -88,7 +107,7 @@ public enum CommonOAuth2Provider {
             builder.clientName("Okta");
             return builder;
         }
-    };
+    };//
 
     private static final String DEFAULT_REDIRECT_URL = "{baseUrl}/{action}/oauth2/code/{registrationId}";
 

@@ -29,6 +29,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
             logger.info(jwt);
+            logger.info(request.getMethod());
             if (StringUtils.hasText(jwt) && jwtProvider.isValidAccessToken(jwt)) {
                 String username = jwtProvider.getUsernameFromAccessToken(jwt);
                 logger.info(username);

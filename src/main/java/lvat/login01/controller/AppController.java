@@ -71,7 +71,8 @@ public class AppController {
         return ResponseEntity.ok(new MessageResponse("Account created successfully", HttpStatus.OK));
     }
 
-    @RequestMapping(path = "/post/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+        @RequestMapping(path = "/post/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//    @RequestMapping(path = "/post/login", method = {RequestMethod.POST, RequestMethod.OPTIONS}, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Logger logger = LoggerFactory.getLogger(UserController.class);
         logger.info(loginRequest.getPassword());

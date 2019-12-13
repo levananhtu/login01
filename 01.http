@@ -1,0 +1,18 @@
+POST /app/post/getNewTokenPair HTTP/1.1
+Host: localhost:8090
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.20.1
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: b16422db-88c5-4dca-873d-7ad463e0872d,bf9f0b41-35d3-484e-a4d0-cb3becac7aaa
+Host: localhost:8090
+Accept-Encoding: gzip, deflate
+Content-Length: 158
+Connection: keep-alive
+cache-control: no-cache
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdmF0MDEiLCJpYXQiOjE1NzYxMTcyNjcsImV4cCI6MTU3ODcwOTI2N30.Am-IDqW0iDY0kf58QeBLa9Ez3jilMX7yH1ZwL6dJTRw"
+}
+
+###
